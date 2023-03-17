@@ -60,32 +60,29 @@
 
 ## Pointer Analysis
 
+<div class="mul-cols">
+<div class="col">
+
 - 指针分析是一种基础的静态分析技术。
 
 - 用于回答程序的指针可能(sound)指向哪些内存中的地址。
 
 - 对于Java来说，指针分析用来回答一个变量 (variable or field) 能指向哪些对象。
 
-- William E.Weihl, "Interprocedural Data Flow Analysis in the Presenceof Pointers,Procedure Variables, and Label Variables".POPL 1980.  
+- William E.Weihl, "Interprocedural Data Flow Analysis in the Presenceof Pointers,Procedure Variables, and Label Variables".POPL 1980. 
 
-</br>
-
-### Key Factors of Pointer Analysis
-
-<div class="mul-cols">
-<div class="col">
 
 <a><img src="https://s2.loli.net/2023/03/15/JXMUZQbAm2uI9CB.png" /></a>
 
 </div>
 <div class="col">
 
+<a><img src="https://s2.loli.net/2023/03/17/cW8ajGsbfRto15D.png" width="80%"></a>
+
+##### Key Factors of Pointer Analysis
 - 把**无限的具体的堆对象**抽象成**有限的抽象堆对象**，通常堆抽象成allocation-site
 - 是否把上下文(对象、参数)不同的同一个方法分开，多次分析(区分数据流)
 - 是否区分语句执行的先后顺序
-
-</div>
-</div>
 
 </script></section><section data-markdown><script type="text/template">
 
@@ -94,13 +91,10 @@
 <div class="mul-cols">
 <div class="col">
 
-上下文敏感是指针分析中速度和精度的最主要的trade-off。
-
-含义：通过上下文信息区分不同调用中的局部变量和对象。
-
-上下文不敏感在一个方法有多个调用的时候，由于不区分调用，所以会出现精度上的丢失。
-
-如右图所示例子中，由于n1和n2都会流到n，就不准了。
+- 上下文敏感是指针分析中速度和精度的最主要的trade-off。
+- 含义：通过上下文信息区分不同调用中的局部变量和对象。
+- 上下文不敏感在一个方法有多个调用的时候，由于不区分调用，所以会出现精度上的丢失。
+- 如右图所示例子中，由于n1和n2都会流到n，就不准了。
 
 </br>
 
