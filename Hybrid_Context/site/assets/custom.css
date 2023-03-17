@@ -176,6 +176,10 @@ section > table th {
   width: 100%
 }
 
+.reveal .mul-cols .mincol {
+  width: 80%
+}
+
 html.print-pdf .reveal pre code {
   font-family: var(--r-code-font) !important;
 }

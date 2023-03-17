@@ -1,0 +1,649 @@
+---
+title: Hybrid Context-Sensitivity for Points-To Analysis
+separator: <!--s-->
+verticalSeparator: <!--v-->
+theme: simple
+highlightTheme: github
+css: custom.css
+revealOptions:
+    transition: 'slide'
+    transitionSpeed: fast
+    center: false
+    slideNumber: "c/t"
+    width: 1600
+    height: 900
+    margin: 0.04
+---
+
+<div class="center middle">
+<div style="width: 100%; margin-top: -200px;">
+
+# Hybrid Context-Sensitivity for Points-To Analysis
+
+</div>
+</div>
+
+<div style="width: 100%; margin-top: -250px;">
+
+> 作者：George Kastrinis, Yannis Smaragdakis
+> 
+> 单位：Department of Informatics University of Athens
+>
+> 会议：PLDI'13
+> 
+> 链接：https://dl.acm.org/doi/pdf/10.1145/2499370.2462191
+
+</div>
+
+<div class="center">
+<div style="width: 100%; margin-top: 50px;">
+
+陆嘉晨 2023.4
+
+</div>
+</div>
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 0. Preliminary
+
+</div>
+</div>
+
+<!--v-->
+
+## Pointer Analysis
+
+- 指针分析是一种基础的静态分析技术。
+
+- 用于回答程序的指针可能(sound)指向哪些内存中的地址。
+
+- 对于Java来说，指针分析用来回答一个变量 (variable or field) 能指向哪些对象。
+
+- William E.Weihl, "Interprocedural Data Flow Analysis in the Presenceof Pointers,Procedure Variables, and Label Variables".POPL 1980.  
+
+</br>
+
+### Key Factors of Pointer Analysis
+
+<div class="mul-cols">
+<div class="col">
+
+<a><img src="https://s2.loli.net/2023/03/15/JXMUZQbAm2uI9CB.png" /></a>
+
+</div>
+<div class="col">
+
+- 把**无限的具体的堆对象**抽象成**有限的抽象堆对象**，通常堆抽象成allocation-site
+- 是否把上下文(对象、参数)不同的同一个方法分开，多次分析(区分数据流)
+- 是否区分语句执行的先后顺序
+
+</div>
+</div>
+
+<!--v-->
+
+## Context-Sensitivity
+
+<div class="mul-cols">
+<div class="col">
+
+上下文敏感是指针分析中速度和精度的最主要的trade-off。
+
+含义：通过上下文信息区分不同调用中的局部变量和对象。
+
+上下文不敏感在一个方法有多个调用的时候，由于不区分调用，所以会出现精度上的丢失。
+
+如右图所示例子中，由于n1和n2都会流到n，就不准了。
+
+</br>
+
+### 两种常见的上下文敏感
+
+- call-site-sensitivity (k-CFA)(通过调用栈区分)
+- object-sensitivity (通过对象区分)
+- 后面会细讲
+
+</div>
+
+<div class="col">
+
+<a><img src="https://s2.loli.net/2023/03/12/f6yZCdHm8ezlP9a.png" width="100%"></a>
+
+</div>
+</div>
+
+<!--v-->
+
+## Context-Sensitivity
+
+</br>
+
+<div class="mul-cols">
+<div class="col">
+
+### Context-Sensitive Heap
+不仅有上述的Calling Context用于区分变量，堆抽象也需要上下文敏感（区分同一个call site创建的对象）。
+- 抽象对象被上下文(heap context)修饰
+- 常见方法：对象上下文来自创建对象的方法的上下文
+- 右图例子中，如果不区分不同参数调用下，同一个call-site创建的对象o8，会导致虚假的数据流
+
+</div>
+
+<div class="col">
+
+<a><img src="https://s2.loli.net/2023/03/15/KvD3FM8dEXtPicB.png" ></a>
+
+</div>
+</div>
+
+<!--v-->
+
+## Context-Sensitive Pointer Analysis: Algorithm
+
+<div class="mul-cols">
+<div class="mincol">
+
+</br>
+
+很复杂？没事，我们今天只关注产生上下文的select函数❗️
+
+只有在ProcessCall的时候才会产生上下文。
+
+</br>
+
+select参数列表：
+1. c caller的上下文
+2. l callsite
+3. c':o_i 变量x新指向的对象
+
+</div>
+
+<div class="col">
+<a><img src="https://s2.loli.net/2023/03/15/V26poMvicPkjK7J.png" ></a>
+</div>
+
+<!--v-->
+
+## DataLog
+
+<div class="mul-cols">
+<div class="col">
+
+Datalog: 逻辑式声明编程语言，是Prolog的子集。
+
+最开始是数据库查询语言，现在在程序分析、大数据等领域有应用。
+
+Datalog = Data + Logic
+
+- 没有副作用（变量赋值
+- 没有控制流
+- 没有函数
+- 不是图灵完备的
+- 支持递归❗️
+- 谓词+规则
+- 只需要写指针分析的规则，不需要实现具体算法
+
+</div>
+
+<div class="col">
+
+- Predicates
+
+```
+Age(person,age)
+Age("Xiaoming",18)
+```
+
+- Datalog Rules(Logic)
+  - 表示如何根据已有事实推导新的事实。
+  - 比如，`H <- B1,B2,...,Bn`.
+  - H为真，当且仅当B1,B2,...,Bn都为真。（就是horn clause
+
+- Rule example (Recursion)
+
+```
+Reach(from, to) <- 
+	Edge(from, to). 
+	
+Reach(from, to) <- 
+	Reach(from, node), 
+	Edge(node, to).
+```
+
+</div>
+</div>
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 1. Introduction
+
+</div>
+</div>
+
+<!--v-->
+
+## Introduction(high level)
+
+### Applications of Pointer Analysis
+
+- Fundamental information
+  - Call graph, aliases, ...
+
+- Compiler optimization
+  - Virtual call inlining, ...
+
+- Bug detection
+  - Null pointer detection, ...
+
+> "Pointer analysis is one of the mostfundamental static program analyses,on which virtually all others are built." (Report from Dagstuhl Seminar 13162. 2013)
+
+### So?
+
+It's important to pick judicious **approximations** that will allow **satisfactory precision** at a **reasonable cost**.
+
+<!--v-->
+
+## Introduction(low level)
+
+</br>
+
+- **Motivation.** One of the major tools for exploiting sweet spots in the precision/performance tradeoff has been **context-sensitivity**.
+
+</br>
+
+- Problem 1 : Can we find a sweet spots of pointer analysis via combining different kinds of context?
+- Problem 2 : How to combine them?
+
+<!--v-->
+
+## Literature and Existing Efforts
+### Call-Site Sensitivity
+
+<div class="mul-cols">
+<div class="col">
+
+- Each context consists of a list of call sites (call chain)
+  - At a method call, append the **call site** to the **caller context** as callee context
+  - Essentially the abstraction of call stacks
+  - Olin Shivers, 1991. “Control-Flow Analysis of Higher-Order Languages”. CMU.
+
+```
+Select(c,l,_) = [l',...,l'',l]
+where c=[l',...,l'']
+```
+
+#### k-Limiting Context Abstraction(K-CFA)
+- To avoid too many contexts
+- Set an upper bound for length of contexts, denoted by k
+
+</div>
+
+<div class="mincol">
+
+<a><img src="https://s2.loli.net/2023/03/15/hgFHjAfMt49WyvE.png" ></a>
+
+</div>
+</div>
+
+<!--v-->
+
+## Literature and Existing Efforts
+### Object Sensitivity
+
+<div class="mul-cols">
+<div class="col">
+
+- Each context consists of a list of abstract objects (represented by their allocation sites)
+  - At a method call, use the **receiver object** with its **heap context** as callee context
+  - Distinguish the operations of data flow on **different objects**
+  - “Parameterized Object Sensitivity for Points-to and Side-Effect Analyses for Java”. ISSTA 2002.
+
+```
+Select(_,_,c':oi) = [oj,...,ok,oi]
+where c=[oj,...,ok]
+```
+
+</div>
+
+<div class="col">
+
+<a><img src="https://s2.loli.net/2023/03/15/6Ni3gwI8Dlzoq4m.png" ></a>
+
+</div>
+</div>
+
+
+<!--v-->
+
+## Limitations of Existing Works
+
+</br>
+
+- 该两者都有一些缺陷，而作者有一个更好的trade-off
+
+</br>
+
+<div class="mul-cols">
+<div class="col">
+
+#### Limitation of 1-CFA
+<a><img src="https://s2.loli.net/2023/03/15/Cpq2wTMdyaPY1UW.png" ></a>
+
+</div>
+
+<div class="col">
+
+#### Limitation of 1-Obj
+<a><img src="https://s2.loli.net/2023/03/15/arcib76deGsKl2E.png" ></a>
+
+</div>
+</div>
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 2. This Paper
+
+</div>
+</div>
+
+<!--v-->
+
+## Parameterizable Model: Context Related
+
+抛开论文的绝大部分规则，只关注如下图所示和上下文选择相关的规则：
+- RECORD：创建heap context
+  - 修饰对象
+  - 主要根据call-site的context(ctx)和当前alloc的对象heap，创建新上下文
+  - 该谓词只有在分析ALLOC时才被调用
+- MERGESTATIC：创建static method的calling context
+  - 修饰变量
+  - 根据call-site的context(ctx)和call-site(invo)<sup>*</sup>，创建新上下文
+- MERGE：创建其他方法的calling context
+  - 修饰变量
+
+<a><img src="https://s2.loli.net/2023/03/17/uMUa37h6tCdLVW1.png" ></a>
+
+\* 这里的invo含义为invocation site，为和上文调用点的英文保持一致，所以这里不作更改。
+
+<!--v-->
+
+<!-- 
+## Parameterizable Model: Context Related Rules
+
+抛开论文的绝大部分规则，只关注如下图所示和上下文选择相关的规则：
+
+<div class="mul-cols">
+<div class="col">
+
+- RECORD：创建新的heap上下文，分析ALLOC时才被调用。（上图第三条规则，含义在reachable方法中alloc语句推出指向关系
+- MERGE和MERGESTATIC创建calling上下文(用于局部变量)。含义：在callsite获取信息，创建新的上下文
+
+<a><img src="https://s2.loli.net/2023/03/17/un8AS25dRbjiUal.png" ></a>
+
+<a><img src="https://s2.loli.net/2023/03/17/lgKLW5wxmNFSoXq.png" ></a>
+
+</div>
+<div class="col">
+
+<a><img src="https://s2.loli.net/2023/03/17/eNzZ67baAUrVnEf.png" ></a>
+
+</div>
+</div>
+-->
+
+
+
+## Parameterizable Model: Context Related Example
+
+- context-insensitive
+
+```
+RECORD (heap,ctx) = * 
+MERGE (heap, hctx, invo, ctx) = * 
+MERGESTATIC (invo, ctx) = *
+```
+
+- 1-call-site-sensitive with a context-sensitive heap 
+
+    heap context = context = call site
+```
+RECORD (heap,ctx) = ctx 
+MERGE (heap, hctx, invo, ctx) = invo 
+MERGESTATIC (invo, ctx) = invo
+```
+
+- 2-object-sensitive with a 1-context-sensitive heap
+
+```
+RECORD (heap,ctx) = first(ctx) // ctx有俩 heapctx就一
+MERGE (heap, hctx, invo, ctx) = pair(heap, hctx) (1-obj就是这里换成heap)
+MERGESTATIC (invo, ctx) = ctx
+```
+
+对象的heap上下文是allocating method上下文的第一个元素
+
+vitual method的上下文是receiver object和他的heap context(parent recv obj)
+
+
+<!--v-->
+
+## This Paper’s Insight
+
+</br>
+
+1. Object-context is typically more **profitable** than call-site-context.
+
+2. A call-site-sensitive heap is far less attractive than an object-sensitive heap. Generally, adding a heap context to a call-site-sensitive analysis increases precision very **slightly**, compared to the overwhelming cost.
+
+3. For a **static method call**, an object-sensitive analysis does not have a heap object available to create a new context.Yet, an **invocation site** is available and can be used to distinguish different static calls.
+
+</br>
+
+
+<!--v-->
+
+## Challenges
+
+</br>
+
+- Naive hybrids, such as always maintaining as context both **a call-site** and **an allocation site**, do not pay off, due to extremely high cost(3.9x).
+
+</br>
+
+- How to build a efficient selective hybrid analyses?
+  - How to select a context that varies?
+
+<!--v-->
+## Design and Implementation
+
+Uniform Hybrid Analyses，即直接保留两种context，确实精确了，但是增加了成本。
+
+- Uniform 1-object-sensitive hybrid (U-1obj).
+用call-site sensitivity增强1object-sensitive，上下文由(C=H\*I)构成。(**According to Insight 1**)
+```
+RECORD (heap,ctx) = *
+MERGE (heap, hctx, invo, ctx) = pair(heap, invo)
+MERGESTATIC (invo, ctx) = pair(first(ctx), invo)
+```
+
+vitual method的上下文是receiver object和callsite
+
+static method的上下文是caller的context和callsite
+
+由于这种方法的上下文是1-obj的超集，所以肯定更精确。
+
+- Uniform 2-object-sensitive with 1-context-sensitive heap hybrid (U-2obj+H).类似的.
+```
+RECORD (heap,ctx) = first(ctx) 
+MERGE (heap, hctx, invo, ctx) = triple(heap, hctx, invo)
+MERGESTATIC (invo, ctx) = triple(first(ctx), second(ctx), invo)
+```
+
+这种混合将object放在更加重要的上下文位置上。(**According to Insight 2**)
+
+如果让HC=I，即使用call-site的上下文，不过如前所述，效果更差。（我理解heap明显和obj更加相关。
+
+<!--v-->
+
+## Design and Implementation
+
+Selective Hybrid Analyses，在同一个分析中使用不同的上下文。
+
+在选择性上下文中，上下文的集合C和HC会形成笛卡尔积。根据在形成新上下文的不同分析点上的可用信息，将创建不同种类的上下文：
+- 在static method被调用时，对象敏感分析没有可用的堆对象来创建一个新的上下文，因此它最多只能传播调用者的上下文。然而，callsite可以被用作上下文，区分不同的静态调用。(**According to Insight 3**)
+- 因为在object-sensitive的分析中，没有太多的信息可以用于创建static method的上下文，所以用call-site当上下文是有好处的。
+
+<!--v-->
+
+## Design and Implementation
+### 两种 static method 的上下文选择
+
+对于static call的上下文的上下文选择有两种不同的方法：
+
+- Selective 1-object-sensitive hybrid A (S_A-1obj).
+
+keep only a single context element in both virtual and static invocations.
+
+总的上下文域：$C=H\cup I$
+```
+RECORD (heap,ctx) = *
+MERGE (heap, hctx, invo, ctx) = heap
+MERGESTATIC (invo, ctx) = invo
+```
+注意，这个分析并不是1obj的超集，这种方法会表明把static method的上下文从object换成call-site的变化。
+
+<!--v-->
+
+## Design and Implementation
+### 两种 static method 的上下文选择
+
+- Selective 1-object-sensitive hybrid B (SB-1obj).
+
+add extra information to the context of static calls.
+
+vitual method的上下文是object
+
+static method的上下文是caller的上下文+callsite
+
+总的上下文域：$C = H\times (I \cup \{*\})$
+```
+RECORD (heap,ctx) = *
+MERGE (heap, hctx, invo, ctx) = pair(heap,*)
+MERGESTATIC (invo, ctx) = pair(first(ctx),invo)
+```
+这个分析是1obj的超集。
+
+<!--v-->
+
+## Design and Implementation
+### 其他选择性上下文策略
+
+- Selective 2-object-sensitive with 1-context-sensitive heap hybrid (S-2obj+H).
+
+用allocation site(object)当heap context
+
+vitual method的上下文不变
+
+总的上下文域：$C = H \times (H \cup I) \times (H \cup I \cup \{*\})$
+```
+RECORD (heap,ctx) = first(ctx)
+MERGE (heap, hctx, invo, ctx) = triple(heap, hctx, *)
+MERGESTATIC (invo, ctx) = triple(first(ctx), invo, second(ctx))
+```
+这种设计对于static method中的static method上下文更倾向于**call-site sensitive**，有助于产生高质量的堆上下文。
+
+- 其他策略
+
+比如，heap context也用混合上下文，效果差。
+
+比如，自由选择call-site和object-sensitive的上下文，将有比较好效果的object-sensitive放在了不重要的位置上，也不是一个好的trade-off。
+
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 3. Evaluation
+
+</div>
+</div>
+
+<!--v-->
+
+## Evaluation
+
+- Experimental Set Up
+  - Implemented and evaluated **all mentioned analyses** using the **DOOP framework**. 
+  - LogicBloc Datalog engine v.3.9.0.
+  - On a Xeon X5650 2.67GHz machine.
+  - **DaCapo benchmark** programs (v.2MR2) under **JDK 1.6.0_37**.
+
+</br>
+
+- Overview 
+  - Uniform hybrid analyses are typically **not good** choices in practice.
+  - The best analyses in our evaluation set, **both** for **highest-precision** and for **high performance** with good precision, are **selective hybrids**.
+
+<!--v-->
+
+## Evaluation
+
+<div class="mul-cols">
+<div class="col">
+
+### Metrics
+- Time (performance)
+- May-fail-cast (precision)
+  - A a = (A) o;
+  - 对于上述cast，如果指针分析后的o不指向a或者a的子类，那么就是一个may-fail-cast
+  - 越小越准
+- call-graph-edge(precision)
+  - 越小越准，因为都sound
+
+</div>
+<div class="col">
+
+<a><img src="https://s2.loli.net/2023/03/17/oF9fW2gr43lv7bP.png" width="75%"></a>
+
+</div>
+</div>
+
+<a><img src="https://s2.loli.net/2023/03/17/wtF5BTRc7CJUxPo.png" ></a>
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 4. Summary
+
+Contributions and Limitations
+
+1. 建模了上下文敏感的指针分析参数空间。允许了call-site和object-sensitivity同时存在或者在二者间切换。
+2. 引入了hybrid call-site- and object-sensitivity的概念。可以自由混合两种不同的上下文，并且根据不同的程序特征来调整混合。目标：保留精确性，成本降低。
+3. 在DOOP框架上实现了算法。
+4. 他们的方法跟2-object-sensitive analysis with a context-sensitive heap相比快了1.53倍而且结果更精确了。比1-object-sensitive快了1.12倍，且精度显著增加。
+5. 现在看来并不是最好的trade-off，只区分了static method。
+</div>
+</div>
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# Thank You
+
+</div>
+</div>
