@@ -60,7 +60,7 @@ revealOptions:
 <div class="mul-cols">
 <div class="col">
 
-- 指针分析是一种基础的静态分析技术。
+- 指针分析是一种基础的静态分析(抽象解释)技术。
 
 - 用于回答程序的指针可能(sound)指向哪些内存中的地址。
 
@@ -89,7 +89,7 @@ revealOptions:
 <div class="col">
 
 - 上下文敏感是指针分析中速度和精度的最主要的trade-off。
-- 含义：通过上下文信息区分不同调用中的局部变量和对象。
+- 含义：通过上下文信息区分不同调用中的**局部变量**和**对象**。
 - 上下文不敏感在一个方法有多个调用的时候，由于不区分调用，所以会出现精度上的丢失。
 - 如右图所示例子中，由于n1和n2都会流到n，就不准了。
 
@@ -123,7 +123,7 @@ revealOptions:
 不仅有上述的Calling Context用于区分变量，堆抽象也需要上下文敏感（区分同一个call site创建的对象）。
 - 抽象对象被上下文(heap context)修饰
 - 常见方法：对象上下文来自创建对象的方法的上下文
-- 右图例子中，如果不区分不同参数调用下，同一个call-site创建的对象o8，会导致虚假的数据流
+- 右图例子中，如果不区分不同参数调用下，同一个call-site创建的对象o8，会导致虚假的数据流。(3:x和4:x指向相同的o8，虽然实际应该是指向不同的对象)
 
 </div>
 
@@ -352,12 +352,50 @@ where c=[oj,...,ok]
 
 <!--v-->
 
+## This Paper’s Insight
+
+</br>
+
+<div class="mul-cols">
+<div class="col">
+
+1. Object-context is typically more **profitable** than call-site-context.
+
+2. A call-site-sensitive heap is far less attractive than an object-sensitive heap. Generally, adding a heap context to a call-site-sensitive analysis increases precision very **slightly**, compared to the overwhelming cost.
+
+3. For a **static method call**, an object-sensitive analysis does not have a heap object available to create a new context.Yet, an **invocation site** is available and can be used to distinguish different static calls.
+
+
+
+</div>
+<div class="mincol">
+</br>
+
+<a><img src="https://s2.loli.net/2023/03/15/arcib76deGsKl2E.png" ></a>
+
+</div>
+
+<!--v-->
+
+## Challenges
+
+</br>
+
+- Naive hybrids, such as always maintaining as context both **a call-site** and **an allocation site**, do not pay off, due to extremely high cost(3.9x).
+
+</br>
+
+- How to build a efficient selective hybrid analyses?
+  - How to select a context that varies?
+
+<!--v-->
+
 ## Parameterizable Model: Context Related
 
 抛开论文的绝大部分规则，只关注如下图所示和上下文选择相关的规则：
 - RECORD：创建heap context
   - 修饰对象
-  - 主要根据call-site的context(ctx)和当前alloc的对象heap，创建新上下文
+  - 主要根据call-site的变量context(ctx)和当前alloc的对象heap，创建新上下文
   - 该谓词只有在分析ALLOC时才被调用
 - MERGESTATIC：创建static method的calling context
   - 修饰变量
@@ -397,7 +435,7 @@ where c=[oj,...,ok]
 
 
 
-## Parameterizable Model: Context Related Example
+## Parameterizable Model: Context Related
 
 - context-insensitive
 
@@ -411,7 +449,7 @@ MERGESTATIC (invo, ctx) = *
 
     heap context = context = call site
 ```
-RECORD (heap,ctx) = ctx 
+RECORD (heap, ctx) = ctx  // ctx = callsite的var的ctx
 MERGE (heap, hctx, invo, ctx) = invo 
 MERGESTATIC (invo, ctx) = invo
 ```
@@ -420,7 +458,7 @@ MERGESTATIC (invo, ctx) = invo
 
 ```
 RECORD (heap,ctx) = first(ctx) // ctx有俩 heapctx就一
-MERGE (heap, hctx, invo, ctx) = pair(heap, hctx) (1-obj就是这里换成heap)
+MERGE (heap, hctx, invo, ctx) = pair(heap, hctx) // 1-obj就是这里换成heap
 MERGESTATIC (invo, ctx) = ctx
 ```
 
@@ -430,40 +468,53 @@ vitual method的上下文是receiver object和他的heap context(parent recv obj
 
 
 <!--v-->
+## Parameterizable Model: Context Related Example
 
-## This Paper’s Insight
+<div class="mul-cols">
+<div class="col">
 
-</br>
+- 1-call-site with a context-sensitive heap 
 
-1. Object-context is typically more **profitable** than call-site-context.
+```
+RECORD (heap, ctx) = ctx // ctx = callsite的var的ctx
+MERGE (heap, hctx, invo, ctx) = invo 
+MERGESTATIC (invo, ctx) = invo
+```
 
-2. A call-site-sensitive heap is far less attractive than an object-sensitive heap. Generally, adding a heap context to a call-site-sensitive analysis increases precision very **slightly**, compared to the overwhelming cost.
+| Variable | []:c  | \[10\]:n1  | \[10\]:n2  | \[16\]:n   | \[17\]:n   |
+| -------- | ----- | ---------- | ---------- | ---------- | ---------- |
+| Object   | []:o9 | \[10\]:o14 | \[10\]:o15 | \[10\]:o14 | \[10\]:o15 |
 
-3. For a **static method call**, an object-sensitive analysis does not have a heap object available to create a new context.Yet, an **invocation site** is available and can be used to distinguish different static calls.
+- 1-obj
 
-</br>
+不加context-sensitve heap，可能是因为几乎没有精度上的提升
 
+```
+RECORD (heap, ctx) = *
+MERGE (heap, hctx, invo, ctx) = heap // heap = caller对象
+MERGESTATIC (invo, ctx) = ctx // ctx = caller的ctx
+```
+
+| Variable | []:c  | \[o9\]:n1  | \[o9\]:n2  | <font color="red">\[o9\]</font>:n   |
+| -------- | ----- | ---------- | ---------- | ---------- |
+| Object   |   o9  |     o14    |     o15    |  o14, o15  |
+
+
+</div>
+<div class="mincol">
+
+<a><img src="https://s2.loli.net/2023/04/06/PDKLMje8GnmsWgC.png" width="100%"></a>
+
+</div>
+</div>
 
 <!--v-->
-
-## Challenges
-
-</br>
-
-- Naive hybrids, such as always maintaining as context both **a call-site** and **an allocation site**, do not pay off, due to extremely high cost(3.9x).
-
-</br>
-
-- How to build a efficient selective hybrid analyses?
-  - How to select a context that varies?
-
-<!--v-->
-## Design and Implementation
+## Design (Uniform)
 
 Uniform Hybrid Analyses，即直接保留两种context，确实精确了，但是增加了成本。
 
 - Uniform 1-object-sensitive hybrid (U-1obj).
-用call-site sensitivity增强1object-sensitive，上下文由(C=H\*I)构成。(**According to Insight 1**)
+用call-site sensitivity增强1object-sensitive，上下文由$C=H \times I$构成。(**According to Insight 1**)
 ```
 RECORD (heap,ctx) = *
 MERGE (heap, hctx, invo, ctx) = pair(heap, invo)
@@ -489,7 +540,48 @@ MERGESTATIC (invo, ctx) = triple(first(ctx), second(ctx), invo)
 
 <!--v-->
 
-## Design and Implementation
+## Design (Uniform): Example
+
+<div class="mul-cols">
+<div class="col">
+
+- 1-obj
+
+```
+RECORD (heap, ctx) = *
+MERGE (heap, hctx, invo, ctx) = heap // heap = caller对象
+MERGESTATIC (invo, ctx) = ctx // ctx = caller的ctx
+```
+
+| Variable | []:c  | \[o9\]:n1  | \[o9\]:n2  | <font color="red">\[o9\]</font>:n   |
+| -------- | ----- | ---------- | ---------- | ---------- |
+| Object   |   o9  |     o14    |     o15    |  o14, o15  |
+
+- Uniform 1-object-sensitive hybrid (U-1obj).
+  
+用call-site增强1obj，上下文是1-obj的超集。
+```
+RECORD (heap,ctx) = *
+MERGE (heap, hctx, invo, ctx) = pair(heap, invo)
+MERGESTATIC (invo, ctx) = pair(first(ctx), invo)
+```
+
+| Var | []:c | \[o9,10\]:n1 | \[o9,10\]:n2 | <font color="red">\[o9,16\]</font>:n | <font color="red">\[o9,17\]</font>:n |
+| --- | ---- | ------------ | ------------ | --------- | --------- |
+| Obj | o9   | o14          | o15          | o14       | o15       |
+
+
+</div>
+<div class="mincol">
+
+<a><img src="https://s2.loli.net/2023/04/06/PDKLMje8GnmsWgC.png" width="100%"></a>
+
+</div>
+</div>
+
+<!--v-->
+
+## Design (Selective)
 
 Selective Hybrid Analyses，在同一个分析中使用不同的上下文。
 
@@ -499,7 +591,7 @@ Selective Hybrid Analyses，在同一个分析中使用不同的上下文。
 
 <!--v-->
 
-## Design and Implementation
+## Design (Selective A)
 ### 两种 static method 的上下文选择
 
 对于static call的上下文的上下文选择有两种不同的方法：
@@ -518,10 +610,10 @@ MERGESTATIC (invo, ctx) = invo
 
 <!--v-->
 
-## Design and Implementation
+## Design (Selective B)
 ### 两种 static method 的上下文选择
 
-- Selective 1-object-sensitive hybrid B (SB-1obj).
+- Selective 1-object-sensitive hybrid B (S_B-1obj).
 
 add extra information to the context of static calls.
 
@@ -535,11 +627,53 @@ RECORD (heap,ctx) = *
 MERGE (heap, hctx, invo, ctx) = pair(heap,*)
 MERGESTATIC (invo, ctx) = pair(first(ctx),invo)
 ```
-这个分析是1obj的超集。
+这个分析是1obj的超集，跟U-1obj比只增强了static call。
 
 <!--v-->
 
-## Design and Implementation
+## Design (Selective): Example
+
+<div class="mul-cols">
+<div class="col">
+
+- 1-obj
+
+```
+RECORD (heap, ctx) = *
+MERGE (heap, hctx, invo, ctx) = heap // heap = caller对象
+MERGESTATIC (invo, ctx) = ctx // ctx = caller的ctx
+```
+
+| Variable | []:c  | \[o9\]:n1  | \[o9\]:n2  | <font color="red">\[o9\]</font>:n   |
+| -------- | ----- | ---------- | ---------- | ---------- |
+| Object   |   o9  |     o14    |     o15    |  o14, o15  |
+
+- Selective 1-object-sensitive hybrid B (S_B-1obj).
+
+用callsite增强1-obj的static call，上下文是1-obj的超集。
+
+```
+RECORD (heap,ctx) = *
+MERGE (heap, hctx, invo, ctx) = pair(heap,*)
+MERGESTATIC (invo, ctx) = pair(first(ctx),invo)
+```
+
+| Var | []:c | \[o9\]:n1 | \[o9\]:n2 | <font color="red">\[o9,16\]</font>:n | <font color="red">\[o9,17\]</font>:n |
+| --- | ---- | ------------ | ------------ | --------- | --------- |
+| Obj | o9   | o14          | o15          | o14       | o15       |
+
+
+</div>
+<div class="mincol">
+
+<a><img src="https://s2.loli.net/2023/04/06/PDKLMje8GnmsWgC.png" width="100%"></a>
+
+</div>
+</div>
+
+<!--v-->
+
+## Design (Selective)
 ### 其他选择性上下文策略
 
 - Selective 2-object-sensitive with 1-context-sensitive heap hybrid (S-2obj+H).
@@ -561,7 +695,6 @@ MERGESTATIC (invo, ctx) = triple(first(ctx), invo, second(ctx))
 比如，heap context也用混合上下文，效果差。
 
 比如，自由选择call-site和object-sensitive的上下文，将有比较好效果的object-sensitive放在了不重要的位置上，也不是一个好的trade-off。
-
 
 <!--s-->
 
