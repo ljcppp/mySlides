@@ -505,8 +505,8 @@ MERGESTATIC (invo, ctx) = ctx // ctx = caller的ctx
 
 <!-- <a><img src="https://s2.loli.net/2023/04/06/PDKLMje8GnmsWgC.png" width="100%"></a> -->
 
-<pre>
-<code data-line-numbers data-ln-start-from="1">class B {
+```java []
+class B {
     static Number id (Number n) {
         return n;
     }
@@ -530,8 +530,8 @@ interface Number {
 class One implements Number {
     public int get() { return 1; }}
 class Two implements Number {
-    public int get() { return 2; }}</code>
-</pre>
+    public int get() { return 2; }}
+```
 
 
 </div>
@@ -603,8 +603,8 @@ MERGESTATIC (invo, ctx) = pair(first(ctx), invo)
 </div>
 <div class="mincol">
 
-<pre>
-<code data-line-numbers data-ln-start-from="1">class B {
+```java []
+class B {
     static Number id (Number n) {
         return n;
     }
@@ -628,8 +628,8 @@ interface Number {
 class One implements Number {
     public int get() { return 1; }}
 class Two implements Number {
-    public int get() { return 2; }}</code>
-</pre>
+    public int get() { return 2; }}
+```
 
 </div>
 </div>
@@ -721,8 +721,8 @@ MERGESTATIC (invo, ctx) = pair(first(ctx),invo)
 </div>
 <div class="mincol">
 
-<pre>
-<code data-line-numbers data-ln-start-from="1">class B {
+```java []
+class B {
     static Number id (Number n) {
         return n;
     }
@@ -746,8 +746,8 @@ interface Number {
 class One implements Number {
     public int get() { return 1; }}
 class Two implements Number {
-    public int get() { return 2; }}</code>
-</pre>
+    public int get() { return 2; }}
+```
 
 </div>
 </div>
