@@ -481,9 +481,9 @@ MERGE (heap, hctx, invo, ctx) = invo
 MERGESTATIC (invo, ctx) = invo
 ```
 
-| Variable | []:c  | \[10\]:n1  | \[10\]:n2  | \[16\]:n   | \[17\]:n   |
-| -------- | ----- | ---------- | ---------- | ---------- | ---------- |
-| Object   | []:o9 | \[10\]:o14 | \[10\]:o15 | \[10\]:o14 | \[10\]:o15 |
+| Variable | []:c  | \[9\]:n1  | \[9\]:n2  | \[15\]:n  | \[16\]:n  |
+| -------- | ----- | --------- | --------- | --------- | --------- |
+| Object   | []:o9 | \[9\]:o13 | \[9\]:o14 | \[9\]:o13 | \[9\]:o14 |
 
 - 1-obj
 
@@ -495,15 +495,44 @@ MERGE (heap, hctx, invo, ctx) = heap // heap = caller对象
 MERGESTATIC (invo, ctx) = ctx // ctx = caller的ctx
 ```
 
-| Variable | []:c  | \[o9\]:n1  | \[o9\]:n2  | <font color="red">\[o9\]</font>:n   |
+| Variable | []:c  | \[o8\]:n1  | \[o8\]:n2  | <font color="red">\[o8\]</font>:n   |
 | -------- | ----- | ---------- | ---------- | ---------- |
-| Object   |   o9  |     o14    |     o15    |  o14, o15  |
+| Object   |   o8  |     o13    |     o14    |  o13, o14  |
 
 
 </div>
 <div class="mincol">
 
-<a><img src="https://s2.loli.net/2023/04/06/PDKLMje8GnmsWgC.png" width="100%"></a>
+<!-- <a><img src="https://s2.loli.net/2023/04/06/PDKLMje8GnmsWgC.png" width="100%"></a> -->
+
+<pre>
+<code data-line-numbers data-ln-start-from="1">class B {
+    static Number id (Number n) {
+        return n;
+    }
+}
+class C {
+    static void main() {
+        C c = new C();
+        c.m();
+    }
+
+    void m() {
+        n1 = new One();
+        n2 = new Two();
+        x = B.id(n1);
+        y = B.id(n2);
+        x.get(); // here
+    }
+}
+interface Number {
+    int get(); }
+class One implements Number {
+    public int get() { return 1; }}
+class Two implements Number {
+    public int get() { return 2; }}</code>
+</pre>
+
 
 </div>
 </div>
@@ -553,9 +582,9 @@ MERGE (heap, hctx, invo, ctx) = heap // heap = caller对象
 MERGESTATIC (invo, ctx) = ctx // ctx = caller的ctx
 ```
 
-| Variable | []:c  | \[o9\]:n1  | \[o9\]:n2  | <font color="red">\[o9\]</font>:n   |
+| Variable | []:c  | \[o8\]:n1  | \[o8\]:n2  | <font color="red">\[o8\]</font>:n   |
 | -------- | ----- | ---------- | ---------- | ---------- |
-| Object   |   o9  |     o14    |     o15    |  o14, o15  |
+| Object   |   o8  |     o13    |     o14    |  o13, o14  |
 
 - Uniform 1-object-sensitive hybrid (U-1obj).
   
@@ -566,15 +595,41 @@ MERGE (heap, hctx, invo, ctx) = pair(heap, invo)
 MERGESTATIC (invo, ctx) = pair(first(ctx), invo)
 ```
 
-| Var | []:c | \[o9,10\]:n1 | \[o9,10\]:n2 | <font color="red">\[o9,16\]</font>:n | <font color="red">\[o9,17\]</font>:n |
+| Var | []:c | \[o8,9\]:n1 | \[o8,9\]:n2 | <font color="red">\[o8,15\]</font>:n | <font color="red">\[o8,16\]</font>:n |
 | --- | ---- | ------------ | ------------ | --------- | --------- |
-| Obj | o9   | o14          | o15          | o14       | o15       |
+| Obj | o8   | o13          | o14          | o13       | o14       |
 
 
 </div>
 <div class="mincol">
 
-<a><img src="https://s2.loli.net/2023/04/06/PDKLMje8GnmsWgC.png" width="100%"></a>
+<pre>
+<code data-line-numbers data-ln-start-from="1">class B {
+    static Number id (Number n) {
+        return n;
+    }
+}
+class C {
+    static void main() {
+        C c = new C();
+        c.m();
+    }
+
+    void m() {
+        n1 = new One();
+        n2 = new Two();
+        x = B.id(n1);
+        y = B.id(n2);
+        x.get(); // here
+    }
+}
+interface Number {
+    int get(); }
+class One implements Number {
+    public int get() { return 1; }}
+class Two implements Number {
+    public int get() { return 2; }}</code>
+</pre>
 
 </div>
 </div>
@@ -644,9 +699,9 @@ MERGE (heap, hctx, invo, ctx) = heap // heap = caller对象
 MERGESTATIC (invo, ctx) = ctx // ctx = caller的ctx
 ```
 
-| Variable | []:c  | \[o9\]:n1  | \[o9\]:n2  | <font color="red">\[o9\]</font>:n   |
+| Variable | []:c  | \[o8\]:n1  | \[o8\]:n2  | <font color="red">\[o8\]</font>:n   |
 | -------- | ----- | ---------- | ---------- | ---------- |
-| Object   |   o9  |     o14    |     o15    |  o14, o15  |
+| Object   |   o8  |     o13    |     o14    |  o13, o14  |
 
 - Selective 1-object-sensitive hybrid B (S_B-1obj).
 
@@ -658,15 +713,41 @@ MERGE (heap, hctx, invo, ctx) = pair(heap,*)
 MERGESTATIC (invo, ctx) = pair(first(ctx),invo)
 ```
 
-| Var | []:c | \[o9\]:n1 | \[o9\]:n2 | <font color="red">\[o9,16\]</font>:n | <font color="red">\[o9,17\]</font>:n |
+| Var | []:c | \[o8\]:n1 | \[o8\]:n2 | <font color="red">\[o8,15\]</font>:n | <font color="red">\[o8,16\]</font>:n |
 | --- | ---- | ------------ | ------------ | --------- | --------- |
-| Obj | o9   | o14          | o15          | o14       | o15       |
+| Obj | o8   | o14          | o14          | o13       | o14       |
 
 
 </div>
 <div class="mincol">
 
-<a><img src="https://s2.loli.net/2023/04/06/PDKLMje8GnmsWgC.png" width="100%"></a>
+<pre>
+<code data-line-numbers data-ln-start-from="1">class B {
+    static Number id (Number n) {
+        return n;
+    }
+}
+class C {
+    static void main() {
+        C c = new C();
+        c.m();
+    }
+
+    void m() {
+        n1 = new One();
+        n2 = new Two();
+        x = B.id(n1);
+        y = B.id(n2);
+        x.get(); // here
+    }
+}
+interface Number {
+    int get(); }
+class One implements Number {
+    public int get() { return 1; }}
+class Two implements Number {
+    public int get() { return 2; }}</code>
+</pre>
 
 </div>
 </div>
