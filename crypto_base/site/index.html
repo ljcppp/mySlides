@@ -211,9 +211,11 @@ By [Jiachen Lu](https://github.com/ljcppp)
 
 gcd相关的定理: 设a、b为整数，且a、b中至少有一个不等于0，令d=gcd(a,b)，则一定存在整数x、y使得下式成立:
 
-   a\*x + b\*y = d
+$$
+a\*x + b\*y = d
+$$
 
-特别地，当a、b互素时，则一定存在整数x、y使得a\*x+b\*y=1成立。
+特别地，当a、b互素时，则一定存在整数x、y使得$a\*x+b\*y=1$成立。这里的x和y可以用扩展欧几里得定理求得。
 
 </script></section><section data-markdown><script type="text/template">
 
@@ -231,7 +233,9 @@ a=4, b=9  gcd(a,b)=1
 
 素数相关的定理: 任一整数a(a>0)都能唯一分解成以下形式:
 
-a = p1 * p2 * p3 * ... * pt
+$$
+a = p_1 * p_2 * p_3 * \cdots * p_t
+$$
 
 其中p1、p2、p3、...、pt是素数。
 
@@ -241,13 +245,13 @@ a = p1 * p2 * p3 * ... * pt
 
 同余的定义: 设a、b、n均为整数，且n!=0，当a-b是n的倍数时即a=b+n\*k(k为整数)，我们称a、b对于模n同余(a is congruent to b mod n)，记作:
 
-   a ≡ b (mod n)
+a ≡ b (mod n)
 
-可以理解为: a%n == b %n
+可以理解为: a%n == b%n
 
-例如:  1 ≡ 4 mod 3
+例如:  1 ≡ 4 (mod 3)
 
-例如:  5 ≡ 8 mod 3
+例如:  5 ≡ 8 (mod 3)
 
 </script></section><section data-markdown><script type="text/template">
 
@@ -372,8 +376,8 @@ $φ(n) = n * (1 - \frac{1}{p_1}) * (1 - \frac{1}{p_2}) * \dots * (1 - \frac{1}{p
 
 ## RSA
 ### 密钥生成
-- 随机选择两个不同大质数 p 和 q，计算 N=p*q
-- 根据欧拉函数，求得 φ(N)=φ(p)\*φ(q)=(p−1)\*(q−1) 
+- 随机选择两个不同大质数 p 和 q，计算 N = p*q
+- 根据欧拉函数，求得 φ(N) = φ(p)\*φ(q) = (p−1)\*(q−1) 
 - 选择一个小于 φ(N) 的整数 e，使 e 和 φ(N) 互质。并求得 e 关于 φ(N) 的模反元素，命名为 d，有 ed≡1 (modφ(N))
   - 求逆用费马小定理就行
 - 将 p​ 和 q​ 的记录销毁
@@ -392,13 +396,13 @@ $φ(n) = n * (1 - \frac{1}{p_1}) * (1 - \frac{1}{p_2}) * \dots * (1 - \frac{1}{p
 
 例如，字符串ABC，先用Hex表示就是414243，16进制值即为4276803
 $$
-m^e = c\ mod\ n
+m^e = c\pmod n
 $$
 
 ### 私钥解密
 
 $$
-c^d = m\ mod\ n
+c^d = m\pmod n
 $$
 
 然后再将m转换为消息。（BTW,可以使用前述CRT加速计算
@@ -410,11 +414,11 @@ $$
 $$
 \begin{aligned}
   c^d & = (m^e)^d           \newline
-      & = m^{e*d} \ mod\ n  \newline
-      & = m^{k\*\phi(n)+1} \ mod\ n \newline
-      & = m * m^{k\*\phi(n)} \ mod\ n \newline
-      & = m * (m^{\phi(n)})^k \ mod\ n \newline
-      & = m\ mod\ n
+      & = m^{e*d} \pmod n  \newline
+      & = m^{k\*\phi(n)+1} \pmod n \newline
+      & = m * m^{k\*\phi(n)} \pmod n \newline
+      & = m * (m^{\phi(n)})^k \pmod n \newline
+      & = m\pmod n
 \end{aligned}
 $$
 
@@ -428,19 +432,22 @@ $$
 
 $$
 \begin{aligned}
-  \because n = p * q, gcd(m,n) \neq 1 \newline
-  \therefore m = k_1p\ \mathbf{or}\ m = k_2q \newline
+  \because n = p * q,\ gcd(m,n) \neq 1 \newline
+  \therefore m = k_1p\ \mathrm{or}\ m = k_2q \newline
 \end{aligned}
 $$
 
-不妨设 $m = k_1p$，由欧拉定理有：$m^{\phi(q)} = 1\ mod\ q = tq + 1$
-
-所以：
+不妨设 $m = k_1p$，由欧拉定理有：$m^{\phi(q)} = 1\pmod q = t_1q + 1$
+</br>
+所以，$m^{k*(p-1)*(q-1)} = 1 \pmod q = t_2q + 1$。
+</br>
+所以:
 $$
 \begin{aligned}
   m^{e \* d} & = m^{k \* \phi(p) \* \phi(q) + 1} \newline
-             & = (tq + 1) * m \newline
-             & = tk_1pq + m
+             & = (t_2q + 1) * m  \newline
+             & = (t_2q + 1) * (k_1p)  \newline
+             & = t_2k_1pq + m
 \end{aligned}
 $$
 
@@ -742,7 +749,7 @@ $$
 
 ## Pohlig-Hellman
 
-4. 再令$r=2,3,4,\cdots,k_i$，重复步骤3，依次求出 $a_1,a_2,\cdots,a_{k_{i−1}}$，整个的时间复杂度是 $O(p_ik_i)$。可以得到 $x = a_0 + a_1p_i + a_2p_i^2 + \cdots + a_{k_{i-1}}p_i^{k_{i-1}} \pmod{p_i^{k_i}}$
+4. 再令 $r=2,3,4,\cdots,k_i$ ，重复步骤3，依次求出 $a_1,a_2,\cdots,a_{k_i}$ ，整个的时间复杂度是 $O(p_ik_i)$。可以得到 $x = a_0 + a_1p_i + a_2p_i^2 + \cdots + a_{k_{i-1}}p_i^{k_{i-1}} \pmod{p_i^{k_i}}$
 5. 重复上述过程，得到 m 个关于 x 的式子，利用中国剩余定理（CRT），可以计算出 x 的值。
 6. 利用这个方法求出 a' 和 b' 后，就可以得到原DLP问题的解。
 
@@ -889,7 +896,14 @@ Example: 而集合$\mathbb{R}$的加法和乘法构成域。
 - GF(256)上常用的不可约多项式：$x^8+x^4+x^3+x^2+1$
 
 ### 加法
-$0x57 + 0x83 = (x^6+x^4+x^2+x+1) + (x^7+x+1) = x^7+x^6+x^4+x^2+2x+2 = x^7+x^6+x^4+x^2 = 0xd4$
+$$
+\begin{aligned}
+  0x57 + 0x83 = (x^6+x^4+x^2+x+1) + (x^7+x+1)   \newline
+= x^7+x^6+x^4+x^2+2x+2  \newline
+= x^7+x^6+x^4+x^2  \newline
+= 0xd4
+\end{aligned}
+$$
 
 同样的，0x57 ^ 0x83=0xd4。
 
