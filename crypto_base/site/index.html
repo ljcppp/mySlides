@@ -83,13 +83,11 @@ By [Jiachen Lu](https://github.com/ljcppp)
 - 非OI/*CPCer
 - 我是fw😭
 
-</br>
+<hr/>
 
-- 可能存在错误，但是我觉得应该没有
-- 可能比较抽象，但是我尽力具体一些
 - 因为我比较菜，可能有些自己也理解的不是很深入🤡
 - 希望不要被骂上98🤣👉😭
-- 曾经组会给做定理证明的老板讲指针分析，老板完全没听懂😭
+- 相对于小学期的其他课程可能有些“无聊”
 
 </script></section></section><section ><section data-markdown><script type="text/template">
 
@@ -107,6 +105,9 @@ By [Jiachen Lu](https://github.com/ljcppp)
 
 密码学是研究编制密码和破译密码的技术科学。
 
+<div class="mul-cols">
+<div class="col">
+
 - 设计加解密算法
 - 破解加解密算法
 
@@ -117,6 +118,14 @@ By [Jiachen Lu](https://github.com/ljcppp)
 - 根据给定的加密算法和密文拿到明文
 - 随机数预测
 - 等...
+
+</div>
+<div class="col" style="width: 70%">
+
+<img src="./figures/story.jpg" width="97%">
+
+</div>
+</div>
 
 </script></section><section data-markdown><script type="text/template">
 
@@ -134,6 +143,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 - 密码学是安全（CTF）中重要的一部分
 - 为了相关题目的分（x
 - 相对于其他方向不好就业（x
+  - 不过也还好现在大厂都有隐私计算的相关的岗位
 
 </script></section><section data-markdown><script type="text/template">
 
@@ -605,6 +615,8 @@ Example: $Z_{5-\\{0, 2, 3\\}}^*$是群$Z_{5-\\{0\\}}^*$的子群
 - 单位元：1；1\*4=4，4\*1=4
 - 逆元：1\*1=1，(4\*4)%5=1
 
+拉格朗日定理：子群的阶必然能整除群阶。证明略。
+
 </script></section><section data-markdown><script type="text/template">
 
 ## 离散对数
@@ -707,13 +719,18 @@ $C_2 \* s^{-1} = m' \* h^y \* (g^{xy})^{-1} = m' \* g^{xy} \* g^{-xy} = m'$
 ## 质数与Pohlig-Hellman
 前面提到，乘法群的离散对数问题大多是困难的（难以计算的）。也讲了基于 大素数p 和 生成元g，构成的循环群$Z^*_p$ 上的公钥加密算法Elgamal。
 
-- 对于不同的大素数p构成的循环群$Z^*_p$，离散对数难度是相同的吗？
+思考：不同的大素数p构成的群$Z^*_p$，求解离散对数难度是相同的吗？
+
+<div class="fragment">
+
 - 显然是不同的，不然就不会做这页slide了。（x
 - 今天要讲的这种weakness主要和群的**阶**相关。
 
 回顾：一个群包含的元素的数量，称为这个群的阶(order)。
 
 虽然群的$Z^*_p$中的p是质数，可能给人一种很强的感觉（x，但是这个群的阶是p-1，是一个合数。当群的阶是**光滑**的时候，离散对数就会弱一些，可以用Pohlig-Hellman算法来解决。
+
+</div>
 
 </script></section><section data-markdown><script type="text/template">
 
@@ -979,6 +996,22 @@ xtime(0x47)=0x8E，xtime(0x8E)=0x07
 - 进阶：4老师精选oi题
   - 质因数不够大而容易被分解，则在 $Z_{pq}$ 上求逆很简单：[CCPC 2019 Final - K. Mr. Panda and Kakin](https://codeforces.com/gym/102055/problem/K)；
   - 群的阶不含大质因子时，离散对数易被求得：[2019 HDU Multi-University Training Contest 5 - 9. discrete logarithm problem](https://acm.hdu.edu.cn/showproblem.php?pid=6632)；
+  - [BabyDLP - ZJUCTF2022](https://ctf.zjusec.com/games/1/challenges)
+
+</script></section><section data-markdown><script type="text/template">
+
+## Crypto工具/资源推荐
+### 工具
+
+- Python常用密码学库：[pycryptodome](https://pypi.org/project/pycryptodome/)
+- 基于Python的开源数学软件：[SageMath](https://www.sagemath.org/)
+  - Windows安装指南：[Install Sage Math from source on WSL](https://www.sandyscott.net/2020/12/install-sage-math-from-source-on-wsl/)
+- 一些别人写好的密码学利用：[Crypto-attacks](https://github.com/jvdsn/crypto-attacks/tree/master)
+- 格密码相关利用：[Lattice-based-cryptanalysis](https://github.com/josephsurin/lattice-based-cryptanalysis)
+
+### 资源
+- 4老师极力推荐的crypto刷题网站❗️：[Cryptohack](https://cryptohack.org/)
+- 与时俱进的crypto入门书籍[《An introduction to mathematical cryptography》](https://link.springer.com/book/10.1007/978-1-4939-1711-2)
 
 </script></section><section data-markdown><script type="text/template">
 
