@@ -1,9 +1,10 @@
 ---
-title: Crypto Base - 2023 AAA小学期
+title: crypto基础 - 2023安全攻防实践
 separator: <!--s-->
 verticalSeparator: <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 theme: simple
-highlightTheme: github
+highlightTheme: monokai-sublime
 css: custom.css
 revealOptions:
     transition: 'slide'
@@ -35,6 +36,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Crypto课程安排
 
@@ -51,6 +53,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
   - Paillier同态加密
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 本节内容
 
@@ -70,6 +73,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 为了易于理解，Slides中有些说法可能不够严谨/记法不统一
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 自我介绍（x：
 
@@ -95,6 +99,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 什么是密码学
 
@@ -123,6 +128,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 为什么需要密码学
 
@@ -141,6 +147,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
   - 不过也还好现在大厂都有隐私计算的相关的岗位
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 基本术语
 
@@ -150,6 +157,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
   - Kerckhoffs准则：一个安全保护系统的安全性不是建立在它的算法对于对手来说是保密的，而是应该建立在它所选择的密钥对于对手来说是保密的。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 现代密码学概述
 
@@ -165,6 +173,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 现代密码学概述
 
@@ -179,6 +188,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Take-away Notes
 
@@ -198,6 +208,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 整除
 
@@ -209,6 +220,7 @@ By [Jiachen Lu](https://github.com/ljcppp)
 3. 若a|b且a|c，则a|(s\*b+t\*c)，其中s、t为任意整数。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 最大公约数（gcd）
 
@@ -223,6 +235,7 @@ $$
 特别地，当a、b互素时，则一定存在整数x、y使得$a\*x+b\*y=1$成立。这里的x和y可以用扩展欧几里得定理求得。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 素数与互素
 
@@ -245,6 +258,7 @@ $$
 其中p1、p2、p3、...、pt是素数。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 模(mod)运算和同余
 
@@ -259,6 +273,7 @@ a ≡ b (mod n)
 例如:  5 ≡ 8 (mod 3)
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 模(mod)运算和同余
 
@@ -271,6 +286,7 @@ a ≡ b (mod n)
    a+c≡b+d, a-c≡b-d, a\*c≡b\*d (mod n)
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 逆元 (inverse)
 
@@ -288,6 +304,7 @@ a ≡ b (mod n)
 <font color="red">思考：如何求解inverse？</font> **基础作业**
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 同余方程
 设 $f(x) = a_nx^n+a_{n-1}x^{n-1}+\cdots+a_1x+a_0$ 是一次数为 n 的整系数多项式，将含有变量x的同余式 $f(x) \equiv 0 \pmod m$ 称为模 m 的同余方程，多项式的次数 n 称为同余方程的次数。
@@ -295,6 +312,7 @@ a ≡ b (mod n)
 若整数 c 满足 $f(c) \equiv 0 \pmod m$，则称c是同余方程的一个解。如果 c 是同余方程的解，那么对于任意整数k，km+c也是同余方程的解。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 中国剩余定理
 如果 $m_1,m_2,\cdots,m_k$ 是两两互素的正整数，则同余方程组
@@ -318,6 +336,7 @@ x \equiv \sum_{i=1}^k a_i M_i M_i' \pmod m
 $$
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 欧拉函数
 
@@ -333,6 +352,7 @@ $φ(n) = p^k - p^{(k-1)} = n ∗ (1−1/p)$
 $φ(n) = n * (1 - \frac{1}{p_1}) * (1 - \frac{1}{p_2}) * \dots * (1 - \frac{1}{p_r})$
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 欧拉定理
 
@@ -349,6 +369,7 @@ $φ(n) = n * (1 - \frac{1}{p_1}) * (1 - \frac{1}{p_2}) * \dots * (1 - \frac{1}{p
 所以 $\\{A_n\\}$ 中的每个数一定与 $\\{b_n\\}$ 中的一个数同余，且一一对应。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 欧拉定理
 所以 $a^{φ(n)}\prod \limits_{i=1}^{\phi(n)} b_i =  \prod \limits_{i=1}^{\phi(n)} ab_i = \prod \limits_{i=1}^{\phi(n)} b_i \pmod n$
@@ -364,6 +385,7 @@ $φ(n) = n * (1 - \frac{1}{p_1}) * (1 - \frac{1}{p_2}) * \dots * (1 - \frac{1}{p
 证明：φ(n) = p - 1
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 非对称加密回顾
 
@@ -378,6 +400,7 @@ $φ(n) = n * (1 - \frac{1}{p_1}) * (1 - \frac{1}{p_2}) * \dots * (1 - \frac{1}{p
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## RSA
 ### 密钥生成
@@ -394,6 +417,7 @@ $φ(n) = n * (1 - \frac{1}{p_1}) * (1 - \frac{1}{p_2}) * \dots * (1 - \frac{1}{p
 <font color="red">思考：e 和 φ(N) 不互质会怎么样？</font>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## RSA
 ### 公钥加密
@@ -413,6 +437,7 @@ $$
 然后再将m转换为消息。（BTW,可以使用前述CRT加速计算
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## RSA正确性证明
 
@@ -430,6 +455,7 @@ $$
 其中，如果gcd(m,n)=1，最后一步直接由欧拉定理即可证明。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## RSA正确性证明
 
@@ -457,6 +483,7 @@ $$
 $$
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Take-away Notes
 - 了解整数相关的基础数论知识
@@ -474,6 +501,7 @@ $$
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 引子
 
@@ -490,6 +518,7 @@ $$
 
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 引子
 19世纪尼尔斯·阿贝尔(Neils Abel)和埃瓦里斯特·伽罗瓦(Evariste Galois)为了证明五次方程的不可解性，创造了一个新的数学对象“群”，使代数学从解方程的科学转变为研究代数结构的科学。
@@ -505,6 +534,7 @@ $$
 今天只会讲和密码学相对相关的一小部分群论知识。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 什么是群
 
@@ -522,6 +552,7 @@ $$
   </br>对于$\forall g \in G$，$\exist g^{-1} \in G$，使得$g \circ g^{-1} = g^{-1} \circ g = e$ 成立。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 群的例子
 
@@ -540,6 +571,7 @@ $$
 > 所以其实大家小学二年级就学过群（x
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 有限群和阶
 
@@ -562,6 +594,7 @@ Example: $\mathbb{Z}_6^+$群下，单位元 加1次数 和 元素 对应关系�
 |          | 6 | 7 | 8 | 9 | 10 | 11 |
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 循环群
 对于群$G^*$，若$\exist a\in G$使得$G=\{a^i | i\in \mathbb{Z}\}$，则称G为循环群，a为循环群G的生成元。
@@ -582,6 +615,7 @@ Example:
 
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 元素的阶
 对于群 $G^*$ 和元素 $a\in G$，若 $\exist n\in \mathbb{N}$，使得$a^n=e$，则称满足该条件的最小正整数n称为元素 a 的阶。
@@ -599,6 +633,7 @@ Example:
 - 4可以生成$Z_{5-\\{0\\}}^*$的**子群**。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 子群
 - 如果群$G^\*$的非空子集合H对于$G^\*$中的运算*也构成一个群，那么$H^\*$称为$G^\*$的子群。
@@ -613,6 +648,7 @@ Example: $Z_{5-\\{0, 2, 3\\}}^*$是群$Z_{5-\\{0\\}}^*$的子群
 拉格朗日定理：子群的阶必然能整除群阶。证明略。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 离散对数
 对于循环群$G^\*$，离散对数问题是指：给定G中两个元素a,b，找到正整数k，使得 $b=a^k$ 成立。
@@ -625,6 +661,7 @@ Example: $Z_{5-\\{0, 2, 3\\}}^*$是群$Z_{5-\\{0\\}}^*$的子群
 然后以加法群和乘法群为例介绍离散对数
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 加法群的离散对数
 加法群的离散对数问题是平凡的（可以快速计算的）。
@@ -636,6 +673,7 @@ Example: $Z_{5-\\{0, 2, 3\\}}^*$是群$Z_{5-\\{0\\}}^*$的子群
 本质就是求a模m下的逆元，用扩展欧几里得算法很容易求解（虽然本课程没讲）。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 乘法群的离散对数
 乘法群的离散对数问题大多是困难的（难以计算的）。
@@ -647,6 +685,7 @@ Example: $Z_{5-\\{0, 2, 3\\}}^*$是群$Z_{5-\\{0\\}}^*$的子群
 Elgamal就是基于上述困难问题的一种公钥密码机制。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Elgamal
 ### 密钥生成
@@ -656,6 +695,7 @@ Elgamal就是基于上述困难问题的一种公钥密码机制。
 4. 公开(p, g, h)作为公钥，私钥是d
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Elgamal
 ### 公钥加密
@@ -667,6 +707,7 @@ Elgamal就是基于上述困难问题的一种公钥密码机制。
 
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Elgamal
 ### 私钥解密
@@ -679,6 +720,7 @@ Elgamal就是基于上述困难问题的一种公钥密码机制。
 $C_2 \* s^{-1} = m' \* h^y \* (g^{xy})^{-1} = m' \* g^{xy} \* g^{-xy} = m'$
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## BSGS
 除了枚举，还有一种相对快速求解离散对数的方法，叫做BSGS（Baby-step giant-step）。
@@ -694,6 +736,7 @@ $C_2 \* s^{-1} = m' \* h^y \* (g^{xy})^{-1} = m' \* g^{xy} \* g^{-xy} = m'$
 所以，打一张$g^j$的表再计算左边就行了，打表和遍历左边的时间复杂度都是$O(\sqrt{n})$，查哈希表时间时间复杂度$O(1)$。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## BSGS
 
@@ -710,6 +753,7 @@ $C_2 \* s^{-1} = m' \* h^y \* (g^{xy})^{-1} = m' \* g^{xy} \* g^{-xy} = m'$
    3. 设 $tmp = tmp \* g^{-m} $
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 质数与Pohlig-Hellman
 前面提到，乘法群的离散对数问题大多是困难的（难以计算的）。也讲了基于 大素数p 和 生成元g，构成的循环群$Z^*_p$ 上的公钥加密算法Elgamal。
@@ -728,6 +772,7 @@ $C_2 \* s^{-1} = m' \* h^y \* (g^{xy})^{-1} = m' \* g^{xy} \* g^{-xy} = m'$
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Pohlig-Hellman
 光滑：即可以因子分解成较小的数的乘积。也意味着群$Z^*_p$有很多小的子群。所以，可以把 大群上的离散对数问题 转换成 易求的子群上的离散对数问题，最后组合起来。
@@ -748,6 +793,7 @@ $$
 如何求 a' 和 b'？
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Pohlig-Hellman
 
@@ -758,6 +804,7 @@ $$
 
 ​
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Pohlig-Hellman
 
@@ -766,6 +813,7 @@ $$
 6. 利用这个方法求出 a' 和 b' 后，就可以得到原DLP问题的解。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 同态
 设G和G’是两个群，f是群G到群G'的一个映射。对于任意$a,b,c\in G$，如果存在$a\*b=c$，G'上也同样存在$f(a)\*f(b)=f(c)$，则称f是群G到群G'的一个同态映射。
@@ -782,6 +830,7 @@ Example: $Z^+$和$Z_n^+$是同态的，f(x) = x % n。
 - 在这个例子里同态其实就是同余
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 同态与同构
 设G和G'是两个群，f是群G到群G'的一个映射。对于任意$a,b,c\in G$，如果存在$a\*b=c$，G'上也同样存在$f(a)\*f(b)=f(c)$，则称f是群G到群G'的一个同态映射。
@@ -797,6 +846,7 @@ Example: $Z^+$和$Z_n^+$是同态的，f(x) = x % n。
 比如保护隐私。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 同态加密
 将原文加密，然后在密文上进行各种运算，最终得到结果 和 在原文上进行同样运算再加密的结果是一样的。
@@ -810,6 +860,7 @@ Example: $Z^+$和$Z_n^+$是同态的，f(x) = x % n。
 - 限于某些类型的计算。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 同态加密
 Example:
@@ -833,6 +884,7 @@ D(F(E(m_1, \cdots, m_n))) = F(m_1, \cdots, m_n)
 $$
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Ring and Field
 
@@ -855,6 +907,7 @@ $$
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 ## 环
 **环**$(R,+,\cdot)$由一个集合$R$和两个二元运算$+$和$\cdot$组成，且满足如下性质：
 
@@ -867,6 +920,7 @@ $(R,\cdot)$满足交换性的环被称为**交换环**。
 Example: 集合$\mathbb{Z}$的加法和乘法构成环（交换环）。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 域
 **域**$(F,+,\cdot)$由一个集合$F$和两个二元运算$+$和$\cdot$组成，且满足如下性质：
@@ -880,6 +934,7 @@ Example: 而集合$\mathbb{R}$的加法和乘法构成域。
 域(Field)在交换环的基础上，还增加了二元运算除法，要求元素(除零以外)可以作除法运算，即每个非零的元素都要有乘法逆元。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 有限域
 
@@ -899,6 +954,7 @@ Example: 而集合$\mathbb{R}$的加法和乘法构成域。
 - 0x83=0b10000011，可以写成$x^7+x+1$。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## GF(2^8)上运算
 
@@ -920,6 +976,7 @@ $$
 同样的，0x57 ^ 0x83=0xd4。
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## GF(2^8)上运算
 
@@ -941,6 +998,7 @@ $$
 
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## xtime
 - 用于加速有限域上的多项式乘法，类似于快速幂
@@ -961,6 +1019,7 @@ xtime(0x47)=0x8E，xtime(0x8E)=0x07
 = 0x57 + 0xAE + 0x07
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Take-away Notes
 - 对群、环、域有基本的认识
@@ -985,15 +1044,18 @@ xtime(0x47)=0x8E，xtime(0x8E)=0x07
 </div>
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## 作业
-- 基础：完成对gcd以及inverse的求解算法，编程语言不限，但只能使用标准库。
-- 进阶：4老师精选oi题
-  - 质因数不够大而容易被分解，则在 $Z_{pq}$ 上求逆很简单：[CCPC 2019 Final - K. Mr. Panda and Kakin](https://codeforces.com/gym/102055/problem/K)；
-  - 群的阶不含大质因子时，离散对数易被求得：[2019 HDU Multi-University Training Contest 5 - 9. discrete logarithm problem](https://acm.hdu.edu.cn/showproblem.php?pid=6632)；
-  - [BabyDLP - ZJUCTF2022](https://ctf.zjusec.com/games/1/challenges)
+一个必做，一个三选一（多做有bonus）
+1. \[必做\]: 完成对gcd以及inverse的求解算法。
+   - 编程语言不限，但只能使用标准库。
+2. [三选一]: 质因数不够大而容易被分解，则在 $Z_{pq}$ 上求逆很简单：[CCPC 2019 Final - K. Mr. Panda and Kakin](https://codeforces.com/gym/102055/problem/K)；
+3. [三选一]: 群的阶不含大质因子时，离散对数易被求得：[2019 HDU Multi-University Training Contest 5 - 9. discrete logarithm problem](https://acm.hdu.edu.cn/showproblem.php?pid=6632)；
+4. [三选一]: 类似的光滑质数的离散对数，但是CTF：[BabyDLP - ZJUCTF2022](https://ctf.zjusec.com/games/1/challenges)
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## Crypto工具/资源推荐
 ### 工具
@@ -1009,6 +1071,7 @@ xtime(0x47)=0x8E，xtime(0x8E)=0x07
 - 与时俱进的crypto入门书籍[《An introduction to mathematical cryptography》](https://link.springer.com/book/10.1007/978-1-4939-1711-2)
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 ## References
 
@@ -1020,6 +1083,7 @@ xtime(0x47)=0x8E，xtime(0x8E)=0x07
 
 
 <!--v-->
+<!-- .slide: data-background="figures/background.png" -->
 
 <div class="middle center">
 <div style="width: 100%">
