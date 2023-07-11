@@ -72,6 +72,10 @@ By [Jiachen Lu](https://github.com/ljcppp)
 
 讲点课上讲的少的（x
 
+</br>
+
+为了易于理解，Slides中有些说法可能不够严谨/记法不统一
+
 </script></section><section data-markdown><script type="text/template">
 <!-- .slide: data-background="figures/background.png" -->
 
@@ -87,7 +91,6 @@ By [Jiachen Lu](https://github.com/ljcppp)
 - 因为我比较菜，可能有些自己也理解的不是很深入🤡
 - 希望不要被骂上98🤣👉😭
 - 相对于小学期的其他课程可能有些“无聊”
-- Slides中有些说法可能不够严谨/记法不统一😟
 
 </script></section></section><section ><section data-markdown><script type="text/template">
 
@@ -297,7 +300,7 @@ a ≡ b (mod n)
 
 - 乘法模逆元
 
-定义: 若a*b = 1 (mod n), 则称a是b的乘法模n逆元，b是a的乘法模n逆元。a的乘法逆元记作$a^{-1}$。
+定义: 若a*b = 1 (mod n), 则称a是b的乘法模n逆元，b是a的乘法模n逆元。a的乘法逆元记作a-1。
 
 例如：求13模35的乘法逆元</br>
 设13模35的乘法逆元为x，则 13*x = 1 (mod 35) 上述等式成立的充要条件为gcd(13,35)=1
@@ -408,6 +411,7 @@ $φ(n) = n * (1 - \frac{1}{p_1}) * (1 - \frac{1}{p_2}) * \dots * (1 - \frac{1}{p
 - 随机选择两个不同大质数 p 和 q，计算 N = p*q
 - 根据欧拉函数，求得 φ(N) = φ(p)\*φ(q) = (p−1)\*(q−1) 
 - 选择一个小于 φ(N) 的整数 e，使 e 和 φ(N) 互质。并求得 e 关于 φ(N) 的模反元素，命名为 d，有 ed≡1 (modφ(N))
+  - 求逆用费马小定理就行
 - 将 p​ 和 q​ 的记录销毁
 - 此时，(N,e)  是公钥，(N,d) 是私钥。
 - 安全性基本建立在大整数分解问题的困难性。（非形式化描述
@@ -547,7 +551,7 @@ $$
 - Associativity（结合律）：先算ab和先算bc的结果是一样的。
   </br>$\forall a,b,c \in G$，都有 $(a \circ b) \circ c = a \circ (b \circ c)$ 成立。
 - Neutral：存在一个单位元。
-  </br>$\exist e \in G$，对于 $\forall g \in G$，都有 $e \circ g = g \circ e = g$ 成立。
+  </br>$\exist e \in G$，对于 $\forall g \in G$，都有 $e \circ g = g \circ e = e$ 成立。
 - Inverse：每个元素都存在逆元。
   </br>对于$\forall g \in G$，$\exist g^{-1} \in G$，使得$g \circ g^{-1} = g^{-1} \circ g = e$ 成立。
 
@@ -599,7 +603,7 @@ Example: $\mathbb{Z}_6^+$群下，单位元 加1次数 和 元素 对应关系�
 ## 循环群
 对于群$G^*$，若$\exist a\in G$使得$G=\{a^i | i\in \mathbb{Z}\}$，则称G为循环群，a为循环群G的生成元。
 
-注：这里的$a^i$表示a连 \* i次，比如$a^2$等价于$a*a$。
+注：这里的$a^i$表示a连乘i次，比如$a^2$等价于$a*a$。
 
 Example:
 </br>
@@ -670,7 +674,7 @@ Example: $Z_{5-\\{0, 2, 3\\}}^*$是群$Z_{5-\\{0\\}}^*$的子群
 
 即求解k，使得 $b = a \* k \pmod m$。
 
-本质就是求a模m下的逆元，用扩展欧几里得算法很容易求解。
+本质就是求a模m下的逆元，用扩展欧几里得算法很容易求解（虽然本课程没讲）。
 
 </script></section><section data-markdown><script type="text/template">
 <!-- .slide: data-background="figures/background.png" -->
@@ -690,9 +694,9 @@ Elgamal就是基于上述困难问题的一种公钥密码机制。
 ## Elgamal
 ### 密钥生成
 1. 选择一个大素数p和生成元g，构成循环群$Z^*_p$，群的阶是p-1。
-2. 随机选择一个区间\[2, p-2\]中的整数x作为私钥
+2. 随机选择一个区间\[2, p-2\]中的整数d作为私钥
 3. 计算$h=g^x \pmod p$
-4. 公开(p, g, h)作为公钥，私钥是x
+4. 公开(p, g, h)作为公钥，私钥是d
 
 </script></section><section data-markdown><script type="text/template">
 <!-- .slide: data-background="figures/background.png" -->
@@ -711,7 +715,7 @@ Elgamal就是基于上述困难问题的一种公钥密码机制。
 
 ## Elgamal
 ### 私钥解密
-1. 计算$s = C_1^x \pmod p$
+1. 计算$s = C_1^d \pmod p$
 2. 计算$m' = C_2 \* s^{-1} \pmod p$
 
 <hr/>
@@ -926,7 +930,7 @@ Example: 集合$\mathbb{Z}$的加法和乘法构成环（交换环）。
 **域**$(F,+,\cdot)$由一个集合$F$和两个二元运算$+$和$\cdot$组成，且满足如下性质：
 
 1. $(F,+)$是一个交换群。
-2. $(F-_{\\{0\\}},\cdot)$是一个交换群。这里将$(F,+)$的单位元记作$0$
+2. $(F\\{0\\},\cdot)$是一个交换群。这里将$(F,+)$的单位元记作$0$
 3. 分配律：$\forall a,b,c\in R, a\cdot (b+c)=a\cdot b+a\cdot c$和$(a+b)\cdot c=a\cdot c+b\cdot c$。
 
 Example: 而集合$\mathbb{R}$的加法和乘法构成域。
@@ -961,7 +965,7 @@ Example: 而集合$\mathbb{R}$的加法和乘法构成域。
 - GF(256)上的加法就是多项式加法
 - GF(256)上的乘法就是模本原多项式的乘法（证明略需要讲到除环
   - 本原多项式就是不可以分解的多项式
-- GF(256)上常用的不可约多项式：$x^8+x^4+x^3+x+1$
+- GF(256)上常用的不可约多项式：$x^8+x^4+x^3+x^2+1$
 
 ### 加法
 $$
@@ -983,7 +987,7 @@ $$
 - GF(256)上的加法就是多项式加法
 - GF(256)上的乘法就是模本原多项式的乘法（证明略需要讲到除环
   - 本原多项式就是不可以分解的多项式
-- GF(256)上常用的不可约多项式：$x^8+x^4+x^3+x+1$
+- GF(256)上常用的不可约多项式：$x^8+x^4+x^3+x^2+1$
 
 ### 乘法
 $$
@@ -1051,8 +1055,8 @@ xtime(0x47)=0x8E，xtime(0x8E)=0x07
 1. \[必做\]: 完成对gcd以及inverse的求解算法。
    - 编程语言不限，但只能使用标准库。
 2. [三选一]: 质因数不够大而容易被分解，则在 $Z_{pq}$ 上求逆很简单：[CCPC 2019 Final - K. Mr. Panda and Kakin](https://codeforces.com/gym/102055/problem/K)；
-3. [三选一]: 群的阶不含大质因子时，离散对数易被求得：[2019 HDU Multi-University Training Contest 5 - 9. discrete logarithm problem](https://acm.hdu.edu.cn/showproblem.php?pid=6632)；
-4. [三选一]: 类似的光滑质数的离散对数，但是CTF：[BabyDLP - ZJUCTF2022](https://ctf.zjusec.com/games/1/challenges)
+3. [三选一]: 群的阶不含大质因子时，离散对数易被求得：[2019 HDU Multi-University Training Contest 5 - 9. discrete logarithm problem](https://vjudge.net/problem/HDU-6632)；
+4. [三选一]: 类似的光滑质数的离散对数，但是CTF：[BabyDLP - ZJUCTF2022](https://raw.githubusercontent.com/team-s2/summer_course_2023/master/src/intro/crypto-lab1/babyDLP.py)
 
 </script></section><section data-markdown><script type="text/template">
 <!-- .slide: data-background="figures/background.png" -->
