@@ -1,0 +1,345 @@
+---
+title: O2
+separator: <!--s-->
+verticalSeparator: <!--v-->
+theme: simple
+highlightTheme: github
+css: custom.css
+revealOptions:
+    transition: 'slide'
+    transitionSpeed: fast
+    center: false
+    slideNumber: "c/t"
+    width: 1600
+    height: 900
+    margin: 0.04
+---
+
+
+<div class="center middle">
+<div style="width: 100%; margin-top: 250px;">
+
+# [When Threads Meet Events: Efficient and Precise Static Race Detection with Origins](https://o2lab.github.io/p/o2.pdf)
+
+<div style="margin-top: 2em;"></div>
+
+<hr/>
+
+<div style="margin-top: 2em;"></div>
+
+PLDI' 21: Bozhen Liu, Peiming Liu, Yanze Li, Jeff Huang等
+
+<div style="text-align: right; margin-top: 4em;">
+<p>2023.8.28&emsp;&emsp;&emsp;</p>
+</div>
+
+</div>
+</div>
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 1. Introduction
+
+</div>
+</div>
+
+<!--v-->
+
+## Introduction(high level)
+
+</br>
+
+- **Motivation.** At a high level, what is the problem are you/the authors are working in and why is it important?
+
+</br>
+
+- Thread and events are two predominant programming abstractions for modern software such as operating systems, databases, mobile apps, and so on.
+- Both face a common problem: threads and events often lead to nondeterministic behaviors due to various types of race conditions.
+- Data races are among the worst bugs in software in that they exhibit non-deterministic symptoms and are notoriously difficult to detect.
+
+<!--v-->
+
+## Introduction(low level)
+
+</br>
+
+- **Motivation.** What is the specific problem considered in this work? This slides narrows down the topic area of the current work. 
+
+</br>
+
+- Problem 1: Pointer analysis of multi-threaded code.
+- Problem 2: Race detection of multi-threaded code.
+
+<!--v-->
+
+## Literature and Existing Efforts
+### Dynamic analysis
+- ThreadSanitizer
+- Efficient Scalable Thread-Safety-Violation Detection (SOSP'19 best paper)
+
+<hr/>
+
+### Static analysis
+- RacerD part of Infer.
+- RaceX
+- Chord 
+
+<!--v-->
+
+## Limitations of Existing Works
+### Dynamic analysis
+- 覆盖率低 (像threadsanitizer并没有预警的能力)
+- 影响性能 (因为插桩)
+
+<hr/>
+
+### Static analysis
+- 指针分析难以在保持精度的情况下有较快的速度
+- RaceD跟starvation类似的设计，尽可能减少误报。且没有alias analysis
+- RacerX依赖CIL前端，仅支持C的子集；且指针分析精度差。
+
+- 以上方法都对event based的race检测效果不佳
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 2. This Paper
+
+</div>
+</div>
+
+<!--v-->
+
+## The Paper's High-Level Insight
+### Thread vs. Event.
+- 线程难以正确实现，事件“stack ripping”（没有自动管理的堆栈
+- 线程和事件之间存在固有联系，都是应用实现功能的办法，所以从高层进行抽象可以实现可扩展且精确的静态分析
+
+</br>
+
+### Unifying Thread and Event.
+在web和数据库服务器等IO密集型软件中通常会混合使用线程和事件
+- IO和生命周期**事件**用于对网络和用户交互的建模
+- 线程池处理并发用户请求
+- 我们提出了origin的概念在不同线程和事件之间统一工作
+
+</br>
+
+### Origins and Pointer Analysis Contexts.
+- origin将线程和事件统一为上下文
+- 虽然用线程作为上下文不新鲜，但是将他们组合起来是新的，只考虑线程或者事件会错过一些race
+- 现有的context sensitive pointer analysis也存在可扩展性的问题
+<!--v-->
+
+## Challenges
+
+</br>
+
+- Challenge 1: 指针分析的scalability不够
+- Challenge 2: 事件比线程的race更难检测，因为大多数事件都是异步的，并且事件处理程序可能以多种不同的方式触发。
+- Challenge 3: 事件和线程的混用。
+
+<!--v-->
+
+## Design and Implementation
+
+</br>
+
+- Component 1: 用origin的概念统一线程和事件的模型
+  - Component 1.1: 基于origin构建了origin-sensitive pointer analysis
+  - Component 1.2: 基于origin构建了origin-sharing analysis
+- Component 2: 用static happens-before代替may-happens-in-parallel，这种方法允许通过检查图的可达性来剪枝。
+- Component 3: 一些sound优化
+
+<!--v-->
+
+## Origin
+- 用origin的概念统一线程和事件的模型，两部分组成
+	- entry：线程或者事件的入口点
+	- attributes：捕获其他语义，比如thread ID、event type、指向的内存对象
+<img src="https://s2.loli.net/2023/07/15/vnSZyFsQPjE1rDi.png" >
+
+- 用线程/事件作为上下文区分程序的变量/对象。
+
+<!--v-->
+
+## Origin Example
+
+- 关注第5、6行的T1和T2会不会同时access 23行的代码。
+- 传统方法需要k-CFA with heap context才能区分13行的对象。
+- origin 基于origin的不同就区分了
+<img src="https://s2.loli.net/2023/07/15/J8LQugZwrPqycWE.png" >
+
+<!--v-->
+
+## Automatically Identifying Origins
+一个程序可以被划分成不同的origin。
+
+在code level，origin是一组具有相同entry point和data point（比如origin attribute）的code paths。通过这种方式可以将程序分成不同的paths集合。
+
+系统识别两种origin：threads and event handlers。
+- 线程：例如Pthreads、Java中的Runnable和Callable
+- 事件：Linux 系统调用接口（均带有前缀 \_\_x86_sys_）、Android 回调（onReceive 和 onEvent）以及流行的偶数驱动框架（Node.js 和 REST API）
+
+</br>
+
+用origin attributes区分有同一个entry point，但是data不同，的不同origin。
+
+Origin attributes：
+- Origin Allocation：origin entry point的recv obj的allocation site，比如上述图2的第5行的o4就是origin allocation，是Origin T1的entry point `start()`的recv obj。
+- Origin Entry Point的参数：比如onReceive(context, intent)，intent包含了要发送的信息，context表示消息发送的环境。
+
+<!--v-->
+
+## Origin-Sensitive Pointer Analysis
+#### Intra-Origin Constraints
+Points-to关系相关语句的处理 和传统的Anderson指针分析几乎一样，只有上下文的区别（换成了Origin上下文）
+- 就是只处理一些new = load store call等语句。
+- 需要注意的是加了对于数组load/store的抽象解释，不处理索引的具体值，用x.\* = y 代替 x\[idx\] = y
+
+<!--v-->
+
+## Origin-Sensitive Pointer Analysis
+#### Inter-Origin Constraints
+当有 origin allocation 和 origin entry point 时，context从Oi切换到新的Oj。
+
+- 需要注意的是对于每个新的origin allocation都需要创建新的origin，而不能使用父Origin的例子。
+
+例子：
+这里有两个orgins Ta和Tb，如果都用parent Origin T，在调用构造函数后，指向关系变成$pts(o_a.f)=pts(o_b.f)=\{<o_f, T_{main}>\}$，导致alias不准，所以需要用不同的Origin区分成 $<o_f, T_a>\ \ <o_f, T_b>$ 两个对象。
+<img src="https://s2.loli.net/2023/08/18/2uVqj3lanTbzxNe.png" >
+
+<!--v-->
+
+## Origin-Sharing Analysis
+基于origin-sensitive heap判断memory object有没有被不同的origin（线程事件）共用。
+处理三类和OSA相关的语句：
+- field访问：基于OPA的结果，查找这个reference可能指向的对象和Origin，如果一个field可能被多个origin访问，且至少有一个是写，就标记为origin-shared。
+- array访问：类似
+- 方法调用：遍历可能的被调用方法
+
+<!--v-->
+
+## Escape Analysis
+方法逃逸：
+- 定义 一个对象在方法中被定义，但却被方法以外的其他代码使用。
+- 场景 如传参到其他方法中等可能导致此情况发生。
+
+线程逃逸：
+- 定义 一个对象由某个线程在方法中被定义，但却被其他线程访问。
+- 场景 如类变量、公用的或有get、set方法的实例变量等
+
+基于escape analysis的优化：
+- 对于不会发生escape的对象可以分配到栈上，消除GC的开销
+- 对于不会线程逃逸的变量，可以删除一些无用的锁
+
+Java的动态特性让跨函数的逃逸分析很TM难搞。https://www.zhihu.com/question/27963717
+
+<!--v-->
+
+## Compare
+我感觉技术路线是差不多的，就是他们的OSA多了一些噱头
+- 更通用，Origin统一了事件和线程
+- 更精确，静态变量通常被认为是thread-escaped，但是OSA可以区分不同的情况；thread-escaped分析一般不处理array访问
+
+<!--v-->
+
+## Static Data Race Detection
+- Existing static race detection typically checks each pair of two conflict accesses from different threads. 从一个acess开始DFS，检查它们的happens-before关系是不是在SHB 图上，并检查两个访问的锁集是否具有共同的锁防护。（基于OSA做SHB和lock check
+- 这种方法存在scalability差的问题
+- 所以实现了如下优化:
+
+### Check Happens-before Relation
+- SHB图中只创建跨Origin的边
+- 用递增的Origin ID代替origin内的HB边
+- 把图遍历变成整数比较
+
+### Check Lockset
+- 观察到互斥组合（锁组合）的数量远小于冲突内存访问的数量，所以给每种互斥组合一个canonical ID，再将每个访问关联到对应的canonical ID上，缩小SHB的内存占用
+
+### Lock-Region-based Race Detection
+- 观察到大量被synchronized保护的memory access导致的冗余race检测，所以将同样的锁保护的内存对象抽象成一个整体。
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 3. Evaluation
+
+</div>
+</div>
+
+<!--v-->
+
+## Evaluation
+- Experimental Set Up
+  - On a large collection of real-world, 
+	  - widelyused distributed systems (e.g., ZooKeeper and HBase), 
+	  - Android apps (e.g., Firefox and Telegram), 
+	  - key-value stores (e.g., Redis/RedisGraph, Memcached and TDengine), 
+	  - network controllers (Open vSwitch OVS), 
+	  - lock-free algorithms (e.g., cpqueue and mrlock),
+	  - Linux kernel.
+  - What platform did you implement your approach?
+	  -  Java
+	  - Android
+	  - C/C++
+
+<!--v-->
+
+## Performance
+
+<div class="middle center">
+
+<img src="https://s2.loli.net/2023/08/21/eBQfro8l4Szn1XH.png" width="100%" height="100%">
+
+</div>
+
+<!--v-->
+
+## Precision
+
+<div class="middle center">
+<div style="width: 100%">
+
+<img src="https://s2.loli.net/2023/08/21/2dju7qkKiFfCsQm.png" >
+
+</div>
+</div>
+
+<!--v-->
+
+
+## New Races Found in Real-World Software
+- 新发现的race大所示由于线程和事件的组合造成的，只考虑线程或者事件就会错过
+- linux kernel的误报主要来自o2无法判断分支是否可行
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 4. Summary
+1. 用origin的概念统一线程和事件的模型，两部分组成
+2. 基于origin构建了origin-sensitive pointer analysis
+3. 基于origin构建了origin-sharing analysis
+4. 基于OPA和OSA构建了Static Data Race Detection
+
+</div>
+</div>
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# Thank You
+
+</div>
+</div>
